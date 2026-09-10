@@ -16,32 +16,34 @@ class EventoController extends Controller
     }
 
     /**
-     * TICKET #002:
-     * Refatorado para filtrar pelo evento atual, ordenar pelas mais recentes 
-     * e paginar de 10 em 10 diretamente no banco de dados.
+     * TICKET #002 & TICKET #004:
+     * Adicionado o carregamento ansioso with('user') para resolver o N+1.
+     * Mantém os filtros do evento, ordenação decrescente e paginação de 10 em 10.
      */
     public function show($id)
     {
         $evento = Evento::findOrFail($id);
 
         $perguntas = Pergunta::where('evento_id', $evento->id)
-            ->latest()
-            ->paginate(10);
+        ->with('user')
+        ->latest()
+        ->paginate(10);
+
 
         return view('eventos.show', compact('evento', 'perguntas'));
     }
 
     /**
-     * TICKET #001 (SEGURANÇA):
-     * Salva a pergunta utilizando o StorePerguntaRequest validado.
+     * TICKET #001 & TICKET #003:
+     * Salva a pergunta vinculando ao usuário logado (se houver).
      */
     public function storePergunta(StorePerguntaRequest $request, $id)
     {
         $evento = Evento::findOrFail($id);
 
-        // Como o request já foi validado pelo StorePerguntaRequest, podemos criar com segurança
         Pergunta::create([
             'evento_id' => $evento->id,
+            'user_id'   => auth()->id(), // Vincula a pergunta ao ID do usuário autenticado
             'texto'     => $request->input('texto'),
             'status'    => 'pendente',
         ]);

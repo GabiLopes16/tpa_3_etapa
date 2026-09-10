@@ -10,10 +10,17 @@ class Pergunta extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['evento_id', 'texto', 'status'];
+    // Adicionado 'user_id' aqui para permitir o cadastro do autor
+    protected $fillable = ['evento_id', 'user_id', 'texto', 'status'];
 
     public function evento(): BelongsTo
     {
         return $this->belongsTo(Evento::class);
+    }
+
+    // NOVA FUNÇÃO DO TICKET #003:
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }
