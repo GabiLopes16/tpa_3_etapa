@@ -16,26 +16,26 @@ class EventoController extends Controller
     }
 
     /**
-     * TICKET #002 & TICKET #004:
-     * Adicionado o carregamento ansioso with('user') para resolver o N+1.
-     * Mantém os filtros do evento, ordenação decrescente e paginação de 10 em 10.
+     * TICKET #002, TICKET #004 & TICKET #006:
+     * Adicionado o filtro where('is_public', true), Eager Loading with('user'), 
+     * ordenação decrescente e paginação de 10 em 10.
      */
     public function show($id)
     {
         $evento = Evento::findOrFail($id);
 
         $perguntas = Pergunta::where('evento_id', $evento->id)
-        ->with('user')
-        ->latest()
-        ->paginate(10);
-
+            ->where('is_public', true)
+            ->with('user')
+            ->latest()
+            ->paginate(10);
 
         return view('eventos.show', compact('evento', 'perguntas'));
     }
 
     /**
      * TICKET #001 & TICKET #003:
-     * Salva a pergunta vinculando ao usuário logado (se houver).
+     * Salva a pergunta vinculando ao usuário logado.
      */
     public function storePergunta(StorePerguntaRequest $request, $id)
     {
@@ -43,7 +43,7 @@ class EventoController extends Controller
 
         Pergunta::create([
             'evento_id' => $evento->id,
-            'user_id'   => auth()->id(), // Vincula a pergunta ao ID do usuário autenticado
+            'user_id'   => auth()->id(),
             'texto'     => $request->input('texto'),
             'status'    => 'pendente',
         ]);
