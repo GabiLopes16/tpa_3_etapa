@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [EventoController::class, 'index'])->name('eventos.index');
 Route::get('/eventos/{id}', [EventoController::class, 'show'])->name('eventos.show');
+
+// TICKET #005: Rota POST com o middleware auth aplicado
 Route::post('/eventos/{id}/perguntas', [EventoController::class, 'storePergunta'])
     ->middleware('auth')
     ->name('eventos.perguntas.store');
