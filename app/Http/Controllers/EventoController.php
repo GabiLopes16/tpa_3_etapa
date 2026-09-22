@@ -11,6 +11,7 @@ class EventoController extends Controller
     public function index()
     {
         $eventos = Evento::all();
+
         return view('eventos.index', compact('eventos'));
     }
 
@@ -19,8 +20,6 @@ class EventoController extends Controller
         $evento = Evento::findOrFail($id);
 
         $perguntas = Pergunta::where('evento_id', $evento->id)
-            ->where('is_public', true)
-            ->with('user')
             ->latest()
             ->paginate(10);
 
@@ -33,12 +32,13 @@ class EventoController extends Controller
 
         Pergunta::create([
             'evento_id' => $evento->id,
-            'user_id'   => auth()->id(),
             'texto'     => $request->input('texto'),
             'status'    => 'pendente',
+            'is_public' => true,
         ]);
 
-        return redirect()->route('eventos.show', $evento->id)
+        return redirect()
+            ->route('eventos.show', $evento->id)
             ->with('sucesso', 'Sua pergunta foi enviada com sucesso!');
     }
 }
