@@ -147,97 +147,58 @@
                     <div class="flex items-center gap-2">
 
                         <span class="text-2xl">📋</span>
-
-                        <h2 class="text-2xl font-bold text-white">
-                            Perguntas do Evento
-                        </h2>
-
-                    </div>
-
-                    <p class="text-sm text-gray-500 mt-1">
-                        Veja o que os participantes estão perguntando.
-                    </p>
-
-                </div>
-
-
-                <div class="bg-gray-900 border border-gray-800 rounded-xl px-4 py-2">
-
-                    <span class="text-blue-400 font-bold">
-                        {{ $perguntas->total() }}
-                    </span>
-
-                    <span class="text-gray-500 text-sm">
-                        perguntas
-                    </span>
-
-                </div>
-
-            </div>
-
-
+            {{-- Início da Listagem de Perguntas --}}
             <div class="space-y-4">
 
                 @forelse($perguntas as $pergunta)
 
-                    <div class="group relative">
+                    {{-- CARD DA PERGUNTA --}}
+                    <div class="ml-3 bg-blue-50 border border-blue-100 rounded-2xl p-5 shadow-sm transition duration-200 hover:bg-blue-100 hover:shadow-md">
 
-                        <div class="absolute left-0 top-5 bottom-5 w-1 bg-blue-500 rounded-full opacity-70">
-                        </div>
+                        <div class="flex gap-4">
 
-
-                        {{-- CARD DA PERGUNTA --}}
-                        <div class="ml-3 bg-blue-50 border border-blue-100 rounded-2xl p-5 shadow-sm transition duration-200 hover:bg-blue-100 hover:shadow-md">
-
-                            <div class="flex gap-4">
-
-                                <div class="flex-shrink-0">
-
-                                    <div class="w-10 h-10 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center">
-                                        <span class="text-lg">💬</span>
-                                    </div>
-
+                            <div class="flex-shrink-0">
+                                <div class="w-10 h-10 rounded-full bg-blue-100 border border-blue-200 flex items-center justify-center">
+                                    <span class="text-lg">💬</span>
                                 </div>
+                            </div>
 
+                            <div class="flex-1 min-w-0">
 
-                                <div class="flex-1 min-w-0">
+                                <p class="text-gray-800 leading-relaxed text-base mb-4">
+                                    {{ $pergunta->texto }}
+                                </p>
 
-                                    <p class="text-gray-800 leading-relaxed text-base mb-4">
-                                        {{ $pergunta->texto }}
-                                    </p>
+                                <div class="flex flex-wrap items-center gap-3">
 
+                                    <span class="text-sm text-gray-500">
+                                        Por: <span class="text-gray-700 font-medium">Anônimo</span>
+                                    </span>
 
-                                    <div class="flex flex-wrap items-center gap-3">
+                                    <span class="text-gray-300">•</span>
 
-                                        <span class="text-sm text-gray-500">
-                                            Por:
-                                            <span class="text-gray-700 font-medium">
-                                                Anônimo
-                                            </span>
+                                    <span class="text-xs text-gray-500">
+                                        {{ $pergunta->created_at->format('d/m/Y H:i') }}
+                                    </span>
+
+                                    <div class="ml-auto flex items-center gap-2">
+
+                                        <span class="inline-flex items-center gap-1.5 bg-green-100 border border-green-200 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">
+                                            <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
+                                            {{ $pergunta->status }}
                                         </span>
 
-
-                                        <span class="text-gray-300">
-                                            •
-                                        </span>
-
-
-                                        <span class="text-xs text-gray-500">
-                                            {{ $pergunta->created_at->format('d/m/Y H:i') }}
-                                        </span>
-
-
-                                        <span class="ml-auto">
-
-                                            <span class="inline-flex items-center gap-1.5 bg-green-100 border border-green-200 text-green-700 text-xs font-semibold px-3 py-1 rounded-full">
-
-                                                <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-
-                                                {{ $pergunta->status }}
-
-                                            </span>
-
-                                        </span>
+                                        {{-- Ticket 4: Botão de exclusão protegido pela Policy --}}
+                                        @can('delete', $pergunta)
+                                            <form action="{{ route('perguntas.destroy', $pergunta) }}" method="POST" onsubmit="return confirm('Tem certeza que deseja deletar esta pergunta?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                
+                                                <button type="submit" class="inline-flex items-center px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-full transition duration-150 shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                                                    Excluir
+                                                </button>
+                                            </form>
+                                        @endcan
 
                                     </div>
 
@@ -247,49 +208,34 @@
 
                         </div>
 
-                    </div>
+                    </div> {{-- Fim do Card da Pergunta --}}
 
                 @empty
 
                     <div class="bg-gray-900 border border-gray-800 border-dashed rounded-2xl p-10 text-center">
-
                         <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-blue-600/10 flex items-center justify-center">
-
-                            <span class="text-3xl">
-                                💭
-                            </span>
-
+                            <span class="text-3xl">💭</span>
                         </div>
-
-
-                        <h3 class="text-lg font-semibold text-gray-300 mb-2">
-                            Nenhuma pergunta ainda
-                        </h3>
-
-
+                        <h3 class="text-lg font-semibold text-gray-300 mb-2">Nenhuma pergunta ainda</h3>
                         <p class="text-sm text-gray-500 max-w-sm mx-auto">
                             Seja a primeira pessoa a enviar uma pergunta para este evento!
                         </p>
-
                     </div>
 
                 @endforelse
 
-            </div>
+            </div> {{-- Fim do bloco space-y-4 --}}
 
 
+            {{-- Paginação externa e isolada --}}
             @if($perguntas->hasPages())
-
                 <div class="mt-6 flex justify-center">
                     {{ $perguntas->links() }}
                 </div>
-
             @endif
 
-        </div>
-
+        </div> {{-- Fecha o container principal da página --}}
     </div>
-
 </div>
 
 @endsection

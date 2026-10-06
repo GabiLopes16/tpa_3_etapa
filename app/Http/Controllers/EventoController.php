@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Evento;
 use App\Models\Pergunta;
 use App\Http\Requests\StorePerguntaRequest;
+use Illuminate\Support\Facades\Gate; // Importação necessária para a proteção
 
 class EventoController extends Controller
 {
@@ -15,7 +16,7 @@ class EventoController extends Controller
         return view('eventos.index', compact('eventos'));
     }
 
-    public function show($id)
+    public function show(string $id)
     {
         $evento = Evento::findOrFail($id);
 
@@ -26,7 +27,7 @@ class EventoController extends Controller
         return view('eventos.show', compact('evento', 'perguntas'));
     }
 
-    public function storePergunta(StorePerguntaRequest $request, $id)
+    public function storePergunta(StorePerguntaRequest $request, string $id)
     {
         $evento = Evento::findOrFail($id);
 
@@ -40,5 +41,23 @@ class EventoController extends Controller
         return redirect()
             ->route('eventos.show', $evento->id)
             ->with('sucesso', 'Sua pergunta foi enviada com sucesso!');
+    }
+
+    /**
+     * Remove a pergunta especificada do banco de dados.
+     * (Ticket 3)
+     */
+    public function destroyPergunta(Pergunta $pergunta)
+    {
+        // Protege o Back-end usando a Facade Gate (Evita o erro de método indefinido)
+        Gate::authorize('delete', $pergunta);
+
+        // Se autorizado, deleta do banco
+        $pergunta->delete();
+
+        // Redireciona de volta com mensagem de sucesso
+        return redirect()
+            ->back()
+            ->with('sucesso', 'Pergunta excluída com sucesso!');
     }
 }

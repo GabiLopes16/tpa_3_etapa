@@ -11,3 +11,5 @@ Route::get('/eventos/{id}', [EventoController::class, 'show'])
 
 Route::post('/eventos/{id}/perguntas', [EventoController::class, 'storePergunta'])
     ->name('eventos.perguntas.store');
+
+Route::delete('/perguntas/{pergunta}', [EventoController::class, 'destroyPergunta'])->name('perguntas.destroy');
